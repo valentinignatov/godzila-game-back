@@ -13,8 +13,8 @@ import student.examples.ggengine.game.Player;
 public class PlayerFactory implements ParticipantFactory {
 	
 	@Override
-	public Participant createParticipant(Long id, String name) {
-		Participant player = new Player(UUID.randomUUID(), name);
+	public Participant createParticipant(UUID uuid, String name) {
+		Participant player = new Player(uuid, name);
 		log.info("In Player Factory, Player Created");
 		return player;
 	}

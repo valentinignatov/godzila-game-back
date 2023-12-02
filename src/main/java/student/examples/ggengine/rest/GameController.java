@@ -1,6 +1,10 @@
 package student.examples.ggengine.rest;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,28 +23,31 @@ import student.examples.ggengine.services.GameService;
 @RequestMapping("/game")
 @RequiredArgsConstructor
 public class GameController {
-	
+
 //	@Autowired
 //	private GameEventPublisher gep;
-	
+
 	@Autowired
 	private GameService gameService;
-	
+
 	@GetMapping("/join/{id}")
-	public Long joinGame(@PathVariable Long id) {
-		//take id of the palyer
-//		log.info(id);
-//		gep.publishGameStatusChange(id, GameState.STARTED);
-		//signal the start of the new game
-		gameService.joinGame(id);
-		return id;
+	public ResponseEntity joinGame(@PathVariable UUID id) {
+
+		boolean isThereUser = gameService.joinGame(id);
+
+		if (isThereUser) {
+			return new ResponseEntity<String>("", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"unauthorized game access\"}",
+					HttpStatus.UNAUTHORIZED);
+		}
 	}
-	
+
 	@GetMapping("/leave")
 	public void leaveGame() {
-		//take id of the palyer
+		// take id of the palyer
 		gameService.leaveGame();
-		
-		//signal the leave of the new game
+
+		// signal the leave of the new game
 	}
 }

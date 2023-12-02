@@ -1,6 +1,8 @@
 package student.examples.ggengine.services;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +36,7 @@ public class GameService {
 
 //	private Game game;
 	private MutiPlayerTeamGame game;
+	private Map<UUID,Participant> allParticipants;
 
 //	@Autowired
 //	MultiplayerTeamGameFactory multiplayerTeamGamefactory;
@@ -53,8 +56,17 @@ public class GameService {
 
 	public void init() {
 		games = new HashSet<Game>();
+		allParticipants = new HashMap<UUID,Participant>();
 		i = 0;
 //		game = (MutiPlayerTeamGame) gameFactory.createGame(null);
+	}
+	
+	//Waiting area here
+	public void addUserWaiting() {
+		UUID uuid = UUID.randomUUID();
+		Participant participant = participantFactory.createParticipant(uuid, "randomName");
+		allParticipants.put(uuid,participant);
+		
 	}
 
 	@Scheduled(fixedRate = 15) // 15
@@ -108,8 +120,14 @@ public class GameService {
 
 	int i;
 
-	public void joinGame(Long id) {
-		Participant participant = participantFactory.createParticipant(1L, "randomName");
+	public boolean joinGame(UUID id) {
+//		Participant participant = participantFactory.createParticipant(1L, "randomName");
+		Participant participant = allParticipants.get(id);
+		
+		if (participant == null) {
+			return false;
+		}
+		
 		Team team = new Team();
 		team.add(participant);
 
@@ -138,10 +156,14 @@ public class GameService {
 		game.getTeams().get("Team A");
 		game.getItems().add(rock);
 		games.add(game);
+		
+		return true;
 
 	}
 
 	public void leaveGame() {
 
 	}
+
+	
 }

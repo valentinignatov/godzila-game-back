@@ -8,7 +8,7 @@ import lombok.Getter;
 import student.examples.ggengine.game.GameState;
 
 @Getter
-public class GameEvent extends ApplicationEvent  {
+public class GameEvent extends ApplicationEvent {
 	private UUID id;
 	private GameState gameState;
 	
