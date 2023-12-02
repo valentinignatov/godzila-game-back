@@ -36,7 +36,7 @@ public class GameService {
 
 //	private Game game;
 	private MutiPlayerTeamGame game;
-	private Map<UUID,Participant> allParticipants;
+	private Map<UUID, Participant> allParticipants;
 
 //	@Autowired
 //	MultiplayerTeamGameFactory multiplayerTeamGamefactory;
@@ -56,17 +56,17 @@ public class GameService {
 
 	public void init() {
 		games = new HashSet<Game>();
-		allParticipants = new HashMap<UUID,Participant>();
+		allParticipants = new HashMap<UUID, Participant>();
 		i = 0;
 //		game = (MutiPlayerTeamGame) gameFactory.createGame(null);
 	}
-	
-	//Waiting area here
+
+	// Waiting area here
 	public void addUserWaiting() {
 		UUID uuid = UUID.randomUUID();
 		Participant participant = participantFactory.createParticipant(uuid, "randomName");
-		allParticipants.put(uuid,participant);
-		
+		allParticipants.put(uuid, participant);
+
 	}
 
 	@Scheduled(fixedRate = 15) // 15
@@ -123,11 +123,11 @@ public class GameService {
 	public boolean joinGame(UUID id) {
 //		Participant participant = participantFactory.createParticipant(1L, "randomName");
 		Participant participant = allParticipants.get(id);
-		
+
 		if (participant == null) {
 			return false;
 		}
-		
+
 		Team team = new Team();
 		team.add(participant);
 
@@ -136,7 +136,7 @@ public class GameService {
 		}
 
 		game = (MutiPlayerTeamGame) games.stream().findFirst().get();
-		
+
 		if (i <= 3) {
 			game.getTeams().get("Team A").add(participant);
 		}
@@ -145,8 +145,8 @@ public class GameService {
 		if (i > 3 && i < 8) {
 			game.getTeams().get("Team B").add(participant);
 		}
-		
-		//Todo change the logic to work with multiple games
+
+		// Todo change the logic to work with multiple games
 //		if (i == 8) {
 //			i = 0;
 //			games.add(gameFactory.createGame(1L));
@@ -156,14 +156,21 @@ public class GameService {
 		game.getTeams().get("Team A");
 		game.getItems().add(rock);
 		games.add(game);
-		
+
 		return true;
 
 	}
 
-	public void leaveGame() {
+	public boolean leaveGame(UUID uuid) {
+
+		Participant participant = allParticipants.get(uuid);
+
+		if (participant != null) {
+			allParticipants.remove(uuid);
+			return true;
+		} else 
+		return false;
 
 	}
 
-	
 }

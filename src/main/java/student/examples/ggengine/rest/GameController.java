@@ -43,11 +43,16 @@ public class GameController {
 		}
 	}
 
-	@GetMapping("/leave")
-	public void leaveGame() {
+	@GetMapping("/leave/{id}")
+	public ResponseEntity leaveGame(@PathVariable UUID id) {
 		// take id of the palyer
-		gameService.leaveGame();
-
+		boolean isUserrRemoved = gameService.leaveGame(id);
+		
+		if (isUserrRemoved) {
+			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"unauthorized game access\"}", HttpStatus.OK);
+		} else
+			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",
+					HttpStatus.UNAUTHORIZED);
 		// signal the leave of the new game
 	}
 }
