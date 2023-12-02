@@ -9,17 +9,17 @@ import student.examples.ggengine.services.GameService;
 
 @Slf4j
 @Component
-public class GameCreationListener implements ApplicationListener<GameCreationEvent> {
+public class GameListener implements ApplicationListener<GameEvent> {
 	
 	@Autowired
-	private GameService gameService;
+	GameService gameService;
 
 	@Override
-	public void onApplicationEvent(GameCreationEvent event) {
+	public void onApplicationEvent(GameEvent event) {
 		// TODO Auto-generated method stub
 		log.info("id " + event.getId());
 		log.info("status " + event.getGameState());
-		gameService.addGame();
+//		gameService.addGame();
 	}
 
 }

@@ -2,16 +2,18 @@ package student.examples.ggengine.game;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-public class Game {
-	private Set<Item> items = new HashSet<Item>();
-	private GameState gameState = GameState.PENDING;
+//@Getter
+public abstract class Game {
+//	private UUID id;
+//	private Set<Item> items = new HashSet<Item>();
+//	private GameState gameState = GameState.PENDING;
 	//Set of players
+	
+	public abstract UUID getId();
+
+	public abstract Set<Item> getItems();
 }

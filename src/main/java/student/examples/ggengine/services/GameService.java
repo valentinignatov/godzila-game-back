@@ -2,52 +2,63 @@ package student.examples.ggengine.services;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import student.examples.ggengine.factory.GameFactory;
+import student.examples.ggengine.factory.MultiplayerTeamGameFactory;
+import student.examples.ggengine.factory.ParticipantFactory;
 import student.examples.ggengine.game.Game;
 import student.examples.ggengine.game.GameState;
 import student.examples.ggengine.game.Item;
+import student.examples.ggengine.game.MutiPlayerTeamGame;
+import student.examples.ggengine.game.Participant;
+import student.examples.ggengine.game.Player;
 import student.examples.ggengine.game.Rock;
+import student.examples.ggengine.game.Team;
 
 @Slf4j
 @Getter
+@Setter
 @Service
 public class GameService {
+
+	@Autowired
+	GameFactory gameFactory;
+
+//	private Game game;
+	private MutiPlayerTeamGame game;
+
+//	@Autowired
+//	MultiplayerTeamGameFactory multiplayerTeamGamefactory;
+
+	@Autowired
+	ParticipantFactory participantFactory;
+
 	private Set<Game> games;
-	
+
 	public GameService() {
-	    init();
-	  }
+		init();
+	}
 
-	  public void init() {
-		  games = new HashSet<Game>();
-//		  Game game = new Game();
-		  games.add(new Game());
-		  
-		  Game game = games.stream().findFirst().get();
-		  game.getItems().add(new Rock(0, 0, 0, 0, 0, 0, 0, 0, null));
-		  
-//		  items.add(new Rock(0, 0, 0, 0, 0, 0, 0, 0, null));
-	  }
+	public void addGame() {
+		games.add(gameFactory.createGame(null));
+	}
 
-//	public void init() {
-//		rock = new Rock();
-//		rock.setWidth(0);
-//		rock.setHeight(0);
-//		rock.setSpeedX(0);
-//		rock.setSpeedY(0);
-//		rock.setLeft(0);
-//		rock.setRotation(0);
-//		rock.setTop(0);
-//		rock.setRotationSpeed(0);
-//	}
+	public void init() {
+		games = new HashSet<Game>();
+		i = 0;
+//		game = (MutiPlayerTeamGame) gameFactory.createGame(null);
+	}
 
 	@Scheduled(fixedRate = 15) // 15
-	  public void updateGameState() {
+	public void updateGameState() {
 //	    rock.setTop(rock.getTop() + 1);
 //	    rock = new Rock(
 //	        rock.getWidth(), 
@@ -71,31 +82,66 @@ public class GameService {
 //				item.getRotation(), 
 //		        item.getRotationSpeed(), 
 //		        item.getItemType()));
-		Game game = games.stream().findFirst().get();
-		
-		Item item = game.getItems().stream().findFirst().get();
-		game.getItems().remove(item);
-		
-		game.getItems().add(new Rock(item.getWidth(),
-				item.getHeight(),
-				item.getSpeedX(),
-				item.getSpeedY(),
-				item.getTop()+1,
-				item.getLeft(),
-				item.getRotation(),
-				item.getRotationSpeed(),
-				null));
-		
-//	    log.info("Update:" + rock.getTop());
-	  }
+//		if (games.isEmpty()) {
+//			return;
+//		}
+//		Game game = games.stream().findFirst().get();
+//
+//		Item item = game.getItems().stream().findFirst().get();
+//		game.getItems().remove(item);
+//
+//		game.getItems().add(new Rock(item.getWidth(), item.getHeight(), item.getSpeedX(), item.getSpeedY(),
+//				item.getTop() + 1, item.getLeft(), item.getRotation(), item.getRotationSpeed(), null));
 
-	public void addGame() {
-		Game game = new Game();
-		game.getItems().add(new Rock(0, 0, 0, 0, 0, 0, 0, 0, null));
-		game.setGameState(GameState.STARTED);
+//	    log.info("Update:" + rock.getTop());
+	}
+
+//	public void addGame() {
+//		Game game = new Game();
+//		game.getItems().add(new Rock(0, 0, 0, 0, 0, 0, 0, 0, null));
+//		game.setGameState(GameState.STARTED);
+//		games.add(game);
+
+//		games.forEach(System.out::println);
+
+//	}
+
+	int i;
+
+	public void joinGame(Long id) {
+		Participant participant = participantFactory.createParticipant(1L, "randomName");
+		Team team = new Team();
+		team.add(participant);
+
+		if (games.isEmpty()) {
+			games.add(gameFactory.createGame(1L));
+		}
+
+		game = (MutiPlayerTeamGame) games.stream().findFirst().get();
+		
+		if (i <= 3) {
+			game.getTeams().get("Team A").add(participant);
+		}
+		i++;
+
+		if (i > 3 && i < 8) {
+			game.getTeams().get("Team B").add(participant);
+		}
+		
+		//Todo change the logic to work with multiple games
+//		if (i == 8) {
+//			i = 0;
+//			games.add(gameFactory.createGame(1L));
+//		}
+
+		Rock rock = new Rock(0, 0, 0, 0, 0, 0, 0, 0, null);
+		game.getTeams().get("Team A");
+		game.getItems().add(rock);
 		games.add(game);
-		
-		games.forEach(System.out::println);
-		
+
+	}
+
+	public void leaveGame() {
+
 	}
 }

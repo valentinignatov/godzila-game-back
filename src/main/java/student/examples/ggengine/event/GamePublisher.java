@@ -1,5 +1,7 @@
 package student.examples.ggengine.event;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -7,7 +9,7 @@ import org.springframework.stereotype.Component;
 import student.examples.ggengine.game.GameState;
 
 @Component
-public class GameEventPublisher {
+public class GamePublisher {
 	
 	@Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -16,8 +18,8 @@ public class GameEventPublisher {
 //		this.applicationEventPublisher=
 //	}
 	
-	public void publishGameStatusChange(int id, GameState newStatus) {
-		GameCreationEvent event = new GameCreationEvent(this, id, newStatus);
+	public void publishGameStatusChange(UUID id, GameState newStatus) {
+		GameEvent event = new GameEvent(this, id, newStatus);
 		applicationEventPublisher.publishEvent(event);
 	}
 }
