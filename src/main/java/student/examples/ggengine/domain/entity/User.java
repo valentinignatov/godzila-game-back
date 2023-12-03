@@ -2,9 +2,14 @@ package student.examples.ggengine.domain.entity;
 
 import java.util.UUID;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,13 +25,21 @@ public class User implements Serializable {
     @Column(name = "id")
 	private UUID id;
 	
+	@NotNull
+	@Pattern(regexp ="[A-Za-z]+ [A-Za-z]+")
 	@Column(name = "user_name")
 	private String username;
 	
-	@JsonIgnore
+	@NotNull
+//	@JsonIgnore
+//	@Min(8)
+//	@Pattern(regexp ="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$") //[a-zA-Z0-9]+$
+//	@Pattern(regexp ="[a-zA-Z0-9]")
     @Column(name = "password")
 	private String password;
 	
+	@NotNull
+	@Pattern(regexp ="^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
 	@Column(name = "email")
 	private String email;
 	

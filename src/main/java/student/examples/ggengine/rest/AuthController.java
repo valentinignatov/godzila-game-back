@@ -8,9 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import student.examples.ggengine.domain.entity.User;
@@ -33,19 +36,19 @@ public class AuthController {
 
 	@Autowired
 	GameService gameService;
+	
+	@PostMapping("/signup")
+	public ResponseEntity signup(@Valid@RequestBody User user) {
+		return new ResponseEntity<>(authService.registerNewUserAccount(user), HttpStatus.OK);
+	}
 
 	@GetMapping("/signin/{userName}/{userPassword}")
 	public ResponseEntity signin(@PathVariable String userName, @PathVariable String userPassword) {
-		if (userName.equalsIgnoreCase("user") && userPassword.equalsIgnoreCase("user")) {
-			userPublisher.publishUserIsSigned("User is signed in");
-		}
-
-//		authService.registerNewUserAccount(user);
-
-		String response = authService.signinUserAccount(userName, userPassword);
+		
+		User response = authService.signinUserAccount(userName, userPassword);
 
 		if (response != null) {
-			return new ResponseEntity<String>(" {status: \"success\", \"token\": \"" + response + "\"}", HttpStatus.OK);
+			return new ResponseEntity<String>(" {status: \"success\", \"token\": \"" + response.getToken() + "\"}", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user\"}",HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
 		}
@@ -60,5 +63,11 @@ public class AuthController {
 			return new ResponseEntity<String>(" {status: \"success\", \"message\": \"user removed\"}", HttpStatus.OK);
 		} else
 			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+	}
+	
+	@GetMapping("findAll")
+	public ResponseEntity findAll() {
+		
+		return new ResponseEntity<>(authService.findAll(), HttpStatus.OK);
 	}
 }

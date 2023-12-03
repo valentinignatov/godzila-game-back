@@ -5,7 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import student.examples.ggengine.domain.entity.PasswordEncoder;
 import student.examples.ggengine.domain.entity.User;
@@ -20,27 +22,26 @@ public class AuthService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public User registerNewUserAccount(User user) {
+	public Optional<User> registerNewUserAccount(User user) {
 		user.setId(UUID.randomUUID());
 		user.setPassword(hashPassword(user.getPassword()));
 		user.setToken(passwordEncoder.encoder().encode(user.getId().toString()));
 		
-		return userRepo.save(user);
+//		userRepo.saveAndFlush(user);
+		
+		return Optional.of(userRepo.saveAndFlush(user));
 	}
 
-	public String signinUserAccount(String userName, String userPassword) {
-		
-		Optional<User> userFromDb = userRepo.findByUserNameAndPassword(userName,
-				hashPassword(userPassword));
-		
-		if (userFromDb.isPresent()) {
-			return hashPassword(userFromDb.get().getId().toString());
-		}
-
-		return null;
+	public User signinUserAccount(String userName, String userPassword) {
+		return userRepo.findByUserNameAndPassword(userName,
+				hashPassword(userPassword)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 	}
 	
 	private String hashPassword(String password) {
 		return Base64.getEncoder().encodeToString(password.getBytes());
+	}
+
+	public Object findAll() {
+		return userRepo.findAll();
 	}
 }
