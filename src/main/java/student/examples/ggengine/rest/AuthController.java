@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import student.examples.ggengine.domain.entity.User;
 import student.examples.ggengine.event.UserPublisher;
 import student.examples.ggengine.services.AuthService;
 import student.examples.ggengine.services.GameService;
@@ -34,22 +35,30 @@ public class AuthController {
 	GameService gameService;
 
 	@GetMapping("/signin/{userName}/{userPassword}")
-	public void signin(@PathVariable String userName, @PathVariable String userPassword) {
+	public ResponseEntity signin(@PathVariable String userName, @PathVariable String userPassword) {
 		if (userName.equalsIgnoreCase("user") && userPassword.equalsIgnoreCase("user")) {
 			userPublisher.publishUserIsSigned("User is signed in");
+		}
+
+//		authService.registerNewUserAccount(user);
+
+		String response = authService.signinUserAccount(userName, userPassword);
+
+		if (response != null) {
+			return new ResponseEntity<String>(" {status: \"success\", \"token\": \"" + response + "\"}", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user\"}",HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
 		}
 	}
 
 	@GetMapping("/signout/{id}")
 	public ResponseEntity signout(@PathVariable UUID id) {
-		
+
 		boolean isUserrRemoved = gameService.leaveGame(id);
 
 		if (isUserrRemoved) {
-			return new ResponseEntity<String>(" {status: \"success\", \"message\": \"user removed\"}",
-					HttpStatus.OK);
+			return new ResponseEntity<String>(" {status: \"success\", \"message\": \"user removed\"}", HttpStatus.OK);
 		} else
-			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",
-					HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
 	}
 }
