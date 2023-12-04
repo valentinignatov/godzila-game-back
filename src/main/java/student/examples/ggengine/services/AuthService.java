@@ -27,8 +27,6 @@ public class AuthService {
 		user.setPassword(hashPassword(user.getPassword()));
 		user.setToken(passwordEncoder.encoder().encode(user.getId().toString()));
 		
-//		userRepo.saveAndFlush(user);
-		
 		return Optional.of(userRepo.saveAndFlush(user));
 	}
 

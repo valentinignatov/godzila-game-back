@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import student.examples.ggengine.domain.entity.User;
 import student.examples.ggengine.factory.GameFactory;
 import student.examples.ggengine.factory.MultiplayerTeamGameFactory;
 import student.examples.ggengine.factory.ParticipantFactory;
@@ -34,12 +35,8 @@ public class GameService {
 	@Autowired
 	GameFactory gameFactory;
 
-//	private Game game;
 	private MutiPlayerTeamGame game;
 	private Map<UUID, Participant> allParticipants;
-
-//	@Autowired
-//	MultiplayerTeamGameFactory multiplayerTeamGamefactory;
 
 	@Autowired
 	ParticipantFactory participantFactory;
@@ -66,6 +63,12 @@ public class GameService {
 		UUID uuid = UUID.randomUUID();
 		Participant participant = participantFactory.createParticipant(uuid, "randomName");
 		allParticipants.put(uuid, participant);
+
+	}
+
+	public void addUserWaiting(User user) {
+		Participant participant = participantFactory.createParticipant(user.getId(), user.getUsername());
+		allParticipants.put(user.getId(), participant);
 
 	}
 
@@ -121,7 +124,6 @@ public class GameService {
 	int i;
 
 	public boolean joinGame(UUID id) {
-//		Participant participant = participantFactory.createParticipant(1L, "randomName");
 		Participant participant = allParticipants.get(id);
 
 		if (participant == null) {
@@ -168,8 +170,8 @@ public class GameService {
 		if (participant != null) {
 			allParticipants.remove(uuid);
 			return true;
-		} else 
-		return false;
+		} else
+			return false;
 
 	}
 

@@ -24,9 +24,6 @@ import student.examples.ggengine.services.GameService;
 @RequiredArgsConstructor
 public class GameController {
 
-//	@Autowired
-//	private GameEventPublisher gep;
-
 	@Autowired
 	private GameService gameService;
 
@@ -45,14 +42,12 @@ public class GameController {
 
 	@GetMapping("/leave/{id}")
 	public ResponseEntity leaveGame(@PathVariable UUID id) {
-		// take id of the palyer
-		boolean isUserrRemoved = gameService.leaveGame(id);
+		boolean isUserrRemoved = gameService.leaveGame(id); //Remove user from allParticipants
 		
 		if (isUserrRemoved) {
 			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"unauthorized game access\"}", HttpStatus.OK);
 		} else
 			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",
 					HttpStatus.UNAUTHORIZED);
-		// signal the leave of the new game
 	}
 }

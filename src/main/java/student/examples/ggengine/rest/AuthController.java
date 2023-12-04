@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import student.examples.ggengine.domain.entity.User;
+import student.examples.ggengine.domain.entity.UserBean;
 import student.examples.ggengine.event.UserPublisher;
 import student.examples.ggengine.services.AuthService;
 import student.examples.ggengine.services.GameService;
@@ -41,11 +42,12 @@ public class AuthController {
 	public ResponseEntity signup(@Valid@RequestBody User user) {
 		return new ResponseEntity<>(authService.registerNewUserAccount(user), HttpStatus.OK);
 	}
-
-	@GetMapping("/signin/{userName}/{userPassword}")
-	public ResponseEntity signin(@PathVariable String userName, @PathVariable String userPassword) {
+	
+	@PostMapping("/signin")
+	public ResponseEntity signin(@Valid@RequestBody UserBean user) {
+		User response = authService.signinUserAccount(user.getUsername(), user.getPassword());
 		
-		User response = authService.signinUserAccount(userName, userPassword);
+		gameService.addUserWaiting(response);
 
 		if (response != null) {
 			return new ResponseEntity<String>(" {status: \"success\", \"token\": \"" + response.getToken() + "\"}", HttpStatus.OK);
@@ -56,8 +58,7 @@ public class AuthController {
 
 	@GetMapping("/signout/{id}")
 	public ResponseEntity signout(@PathVariable UUID id) {
-
-		boolean isUserrRemoved = gameService.leaveGame(id);
+		boolean isUserrRemoved = gameService.leaveGame(id);//Remove user from allParticipants
 
 		if (isUserrRemoved) {
 			return new ResponseEntity<String>(" {status: \"success\", \"message\": \"user removed\"}", HttpStatus.OK);
@@ -65,7 +66,7 @@ public class AuthController {
 			return new ResponseEntity<String>(" {status: \"failed\", \"message\": \"no such user to remove\"}",HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
 	}
 	
-	@GetMapping("findAll")
+	@GetMapping("/findAll")
 	public ResponseEntity findAll() {
 		
 		return new ResponseEntity<>(authService.findAll(), HttpStatus.OK);
